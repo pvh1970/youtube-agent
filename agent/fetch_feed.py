@@ -4,7 +4,7 @@ import os
 from summarize import summarize_text
 from notify import send_notification
 
-FEED_URL = "https://www.youtube.com/feeds/videos.xml?channel_id=KANALID"  # bytt ut
+FEED_URL = "https://www.youtube.com/playlist?list=PLsY30fLfDNuLC7gou9-l7GLt5U-exQh39"  # bytt ut
 STATE_FILE = "agent/state.json"
 
 def load_state():
