@@ -1,9 +1,10 @@
 import requests
 
 HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
-HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+HF_URL = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
 
 def summarize_text(text: str) -> str:
+    # Trunkér tekst for å unngå modellkrasj
     text = text[:2000]
 
     prompt = f"Oppsummer følgende tekst kort og presist:\n\n{text}"
@@ -24,10 +25,11 @@ def summarize_text(text: str) -> str:
     print(data)
     print("-----------------------\n")
 
-    # Forsøk å hente generert tekst
+    # Mistral returnerer en liste med dicts
     if isinstance(data, list) and "generated_text" in data[0]:
         return data[0]["generated_text"]
 
+    # Noen ganger returnerer router direkte dict
     if isinstance(data, dict) and "generated_text" in data:
         return data["generated_text"]
 
