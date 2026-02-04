@@ -22,7 +22,5 @@ jobs:
         run: pip install feedparser requests
 
       - name: Run agent
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python agent/fetch_feed.py
 
