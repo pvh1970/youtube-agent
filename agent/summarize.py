@@ -1,25 +1,27 @@
 import requests
 
-HF_MODEL = "facebook/bart-large-cnn"
+HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
 HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
 
 def summarize_text(text: str) -> str:
+    # Trunkér tekst for å unngå modellkrasj
+    text = text[:2000]
+
+    prompt = f"Oppsummer følgende tekst kort og presist:\n\n{text}"
+
     payload = {
-        "inputs": text,
+        "inputs": prompt,
         "parameters": {
-            "max_length": 150,
-            "min_length": 40,
-            "do_sample": False
+            "max_new_tokens": 150,
+            "temperature": 0.2
         }
     }
 
     response = requests.post(HF_URL, json=payload)
     data = response.json()
 
-    # HuggingFace returnerer en liste med dicts
-    if isinstance(data, list) and "summary_text" in data[0]:
-        return data[0]["summary_text"]
+    # Mistral returnerer en liste med dicts
+    if isinstance(data, list) and "generated_text" in data[0]:
+        return data[0]["generated_text"]
 
-    # fallback
     return "Kunne ikke oppsummere innholdet."
-
