@@ -1,19 +1,25 @@
 import requests
-import os
+
+HF_MODEL = "facebook/bart-large-cnn"
+HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
 
 def summarize_text(text: str) -> str:
-    api_key = os.getenv("OPENAI_API_KEY")
-
-    prompt = f"Oppsummer følgende innhold kort og presist:\n\n{text}"
-
-    response = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers={"Authorization": f"Bearer {api_key}"},
-        json={
-            "model": "gpt-4o-mini",
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 200
+    payload = {
+        "inputs": text,
+        "parameters": {
+            "max_length": 150,
+            "min_length": 40,
+            "do_sample": False
         }
-    )
+    }
 
-    return response.json()["choices"][0]["message"]["content"]
+    response = requests.post(HF_URL, json=payload)
+    data = response.json()
+
+    # HuggingFace returnerer en liste med dicts
+    if isinstance(data, list) and "summary_text" in data[0]:
+        return data[0]["summary_text"]
+
+    # fallback
+    return "Kunne ikke oppsummere innholdet."
+
