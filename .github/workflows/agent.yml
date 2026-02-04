@@ -2,8 +2,8 @@ name: youtube-podcast-agent
 
 on:
   schedule:
-    - cron: "0 * * * *"   # kjør hver time
-  workflow_dispatch:       # manuell kjøring
+    - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   run-agent:
@@ -19,8 +19,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install feedparser requests
+        run: pip install requests
 
       - name: Run agent
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: python agent/fetch_feed.py
-
