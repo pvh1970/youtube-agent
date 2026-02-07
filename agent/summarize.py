@@ -8,12 +8,12 @@ def summarize_text(text: str) -> str:
 
     headers = {
         "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
-        "HTTP-Referer": "https://github.com",   # kreves av OpenRouter
+        "HTTP-Referer": "https://github.com",
         "X-Title": "YouTube Agent"
     }
 
     payload = {
-        "model": "mistralai/mistral-7b-instruct:free",
+        "model": "qwen/qwen2.5-7b-instruct:free",
         "messages": [
             {"role": "user", "content": prompt}
         ],
