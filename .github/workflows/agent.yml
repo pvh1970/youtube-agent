@@ -7,7 +7,7 @@ on:
 
 env:
   YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
 jobs:
   run-agent:
