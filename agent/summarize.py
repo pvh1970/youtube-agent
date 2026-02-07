@@ -1,41 +1,43 @@
+import os
 import requests
 
-HF_MODEL = "facebook/bart-large-cnn"
-HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
-
 def summarize_text(text: str) -> str:
-    # Trunkér tekst for å unngå modellkrasj
     text = text[:2000]
 
-    payload = {
-        "inputs": text,
-        "parameters": {
-            "max_length": 150,
-            "min_length": 40,
-            "do_sample": False
-        }
+    prompt = f"Oppsummer følgende tekst kort og presist:\n\n{text}"
+
+    headers = {
+        "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
+        "HTTP-Referer": "https://github.com",   # kreves av OpenRouter
+        "X-Title": "YouTube Agent"
     }
 
-    response = requests.post(HF_URL, json=payload)
+    payload = {
+        "model": "mistralai/mistral-7b-instruct:free",
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
+        "max_tokens": 200,
+        "temperature": 0.2
+    }
 
-    # Hvis API-et returnerer HTML eller tomt svar
-    if not response.text.strip():
-        print("HF tom respons:", response.status_code)
-        return "Kunne ikke oppsummere innholdet."
+    response = requests.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        headers=headers,
+        json=payload
+    )
 
     try:
         data = response.json()
-    except Exception as e:
-        print("HF JSON-feil:", e)
-        print("Rå respons:", response.text[:500])
+    except Exception:
+        print("OpenRouter rå respons:", response.text[:500])
         return "Kunne ikke oppsummere innholdet."
 
-    print("\n--- HF RAW RESPONSE ---")
+    print("\n--- OpenRouter RAW RESPONSE ---")
     print(data)
-    print("-----------------------\n")
+    print("-------------------------------\n")
 
-    # BART returnerer en liste med dicts
-    if isinstance(data, list) and "summary_text" in data[0]:
-        return data[0]["summary_text"]
-
-    return "Kunne ikke oppsummere innholdet."
+    try:
+        return data["choices"][0]["message"]["content"]
+    except Exception:
+        return "Kunne ikke oppsummere innholdet."
