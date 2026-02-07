@@ -13,7 +13,7 @@ def summarize_text(text: str) -> str:
     }
 
     payload = {
-        "model": "qwen/qwen2.5-7b-instruct:free",
+        "model": "google/gemma-2-2b-it:free",
         "messages": [
             {"role": "user", "content": prompt}
         ],
